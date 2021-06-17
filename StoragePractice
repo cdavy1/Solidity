@@ -1,0 +1,95 @@
+pragma solidity 0.8.1;
+
+
+//////PURPOSE//////////
+/*
+->Setup relationship between the mapping and array to enable faster lookups.
+->Creates a new entity for msg.sender and adds it to the mapping/array in same method and returns index of item added to array.
+->Updates a new entity for msg.sender
+*/
+//////////////////////
+
+contract StoragePractice{
+    
+    struct Entity{
+    address _address;
+    uint data;
+    uint index;
+    bool exists;
+    }
+    
+    Entity[] entities;
+    mapping (address=>Entity) mapEntity;
+        
+    function addEntity(address _address, uint _entity) external returns(uint){
+        require(!mapEntity[_address].exists,"Unable to add duplicate entity");
+        
+        uint myItem = entities.length;
+        
+        if (myItem >= 1){
+            myItem = entities.length-1;
+            }
+            else {
+            myItem = 0;
+            }
+        
+        Entity memory myEntity = createEntity(_address,_entity,myItem);
+        
+        entities.push(myEntity);
+        
+        mapEntity[_address] = myEntity;
+        
+        return myItem;
+        
+    }
+    
+    function updateEntity(address _address, uint _entityData) public {
+        uint myItem = getItemIndex(_address);
+        
+        entities[myItem].data = _entityData;
+        
+        mapEntity[_address] = createEntity(_address, _entityData,myItem);
+    }
+    
+//////HELPER FUNCTION(S)/////
+    function createEntity(address _address, uint _entityData, uint _itemIndex) internal pure returns(Entity memory) {
+       
+        Entity memory myEntity = Entity(_address,_entityData,_itemIndex,true);
+       
+        return myEntity;
+    }
+    
+    function getItemIndex(address _address) internal view returns(uint){
+        
+        return mapEntity[_address].index;
+        
+    }
+    
+/////TEST CASES//////
+    function getMapped(address _address) public view returns (Entity memory){
+    //Test Case: Check the mapped entity values
+    return mapEntity[_address];
+    
+    }
+    
+    function getArray(address _address) public view returns (Entity memory) {
+    //TEST CASE: Returns the value of the Array entity
+    
+    return entities[getItemIndex(_address)];
+    }
+    
+    function checkArrLength() public view returns (uint){
+        
+        uint zeroLength = entities.length;
+        return zeroLength;
+    }
+    
+    function testLookupItem (address _lookup) public view returns (Entity memory) {
+    //Takes an address and returns the entity data
+    
+    Entity memory lookupEntity = mapEntity[_lookup];
+    
+    return lookupEntity;
+    }
+    
+}
