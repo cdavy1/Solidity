@@ -7,7 +7,7 @@ pragma solidity 0.8.1;
 contract MultiSigWalletRequests{
 
 /////////////////////////////////////////////
-//STATE VARIABLES
+//STATE VARIABLES                          //  
 /////////////////////////////////////////////
 
 
